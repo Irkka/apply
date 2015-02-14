@@ -1,0 +1,32 @@
+#!/bin/bash
+DEFAULT_CONFIG_DIR="${XDG_CONFIG_HOME}/apply"
+BASHLIB_PATH="${HOME}/.local/lib:$(readlink -m ${BASH_SOURCE}/../../lib)"
+
+echo $BASHLIB_PATH
+source "${HOME}/.local/lib/squire.sh"
+require 'apply'
+
+case $1 in
+  -v|--version )
+    echo "$APPLY_APPLICATION_NAME $APPLY_VERSION"
+    ;;
+  all )
+    config_directory="$(readlink -m ${BASH_SOURCE}/../../examples)"
+    packages_directory="${config_directory}/packages"
+    files_directory="${config_directory}/files"
+    repos_directory="${config_directory}/repos"
+
+    echo "$BASH_SOURCE"
+    echo "$DEFAULT_CONFIG_DIR"
+    echo "$config_directory"
+    echo "$packages_directory"
+    echo "$files_directory"
+    echo "$repos_directory"
+
+    echo 'Applying everything!'
+
+    echo 'Setting up Git repositories'
+    apply_repos $repos_directory
+    ;;
+esac
+
