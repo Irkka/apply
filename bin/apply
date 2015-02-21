@@ -1,21 +1,19 @@
 #!/bin/bash
 BASHLIB_PATH="${HOME}/.local/lib:$(readlink -m ${BASH_SOURCE}/../../lib)"
 
+# Squire functionality integrated for now
 LOADED_BY_SQUIRE=()
 function load() {
   library="${1}.sh"
 
   if [[ -f $library ]]; then
     source $library
-    echo "${library} loaded"
     return 0
   fi
 
-  echo "Library $library doesn't exist"
   return 1
 }
 
-# Squire functionality integrated
 function require() {
   library_directories=$(echo $BASHLIB_PATH|tr ':', ' ')
   for library_directory in $library_directories ; do
@@ -26,6 +24,9 @@ function require() {
   done
 }
 
+# At the moment $BASH_SOURCE needs to be passed to require_relative
+# but preferably this functionality should be incorporated to the
+# function itself – no clue how to achieve this yet, though
 function require_relative() {
   relative_root_directory="${1%/*}"
   library_relative_path="${2}"
@@ -36,4 +37,3 @@ function require_relative() {
 require 'apply'
 
 apply_dispatch "$@"
-dispatcher_dump

@@ -1,4 +1,5 @@
 require_relative $BASH_SOURCE 'dispatcher/configure'
+
 require_relative $BASH_SOURCE 'dispatcher/conveyor'
 require_relative $BASH_SOURCE 'dispatcher/installer'
 require_relative $BASH_SOURCE 'dispatcher/mapper'
