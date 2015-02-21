@@ -1,43 +1,35 @@
 function process_file() {
-  file=$(basename $1)
+  source_file="$1"
+
+  file=$(basename $source_file)
   file_name="${file%.*}"
   file_extension="${file##*.}"
+  file_dir=$(dirname $1)
+
+  file_target_directory="${file_dir##${APPLY_SKELETON_DIR}/${APPLY_SKELETON}}"
+  file_target="${file_target_directory}/${file_name}"
+
+  temp_target_directory="${APPLY_TEMP_DIR}/${APPLY_SKELETON}/${file_target_directory#/}"
+  temp_file="${temp_target_directory}/${file_name}"
+
+  mkdir -p $temp_target_directory
 
   if [[ -n $file_extension ]]; then
-    build_file $1
+    echo "Building $source_file to staging area"
+    build_file $source_file $temp_file
   else
-    #install_file $1
-    echo 'No file extension'
+    echo 'Staging static file'
+    cp $source_file $temp_file
   fi
 }
 
 function build_file() {
-  file=$(basename $1)
-  file_name="${file%.*}"
-  file_extension="${file##*.}"
-  file_dir=$(dirname $1)
-  file_target_directory="${file_dir##${APPLY_SKELETON_DIR}/${APPLY_SKELETON}}"
-  file_target="${file_target_directory}/${file_name}"
+  source_file="$1"
+  temp_file="$2"
 
-  temp_file="${APPLY_TEMP_DIR}/${file_name}"
-  echo $1
-  echo $temp_file
-  echo $file_target_directory
-  erubis ${1} > "${temp_file}"
-
-  install_file $temp_file $file_target
+  erubis ${source_file} > "${temp_file}"
 }
 
-function install_file() {
-  if [[ -f $2 ]]; then
-    echo 'File exists. Rewrite?'
-    read switch
-
-    if [[ $switch =~ 'n' ]]; then
-      echo 'Not rewriting.'
-      exit 1
-    fi
-  fi
-
-  mv $temp_file $file_target || sudo mv $temp_file $file_target
+function sync_target_system() {
+  rsync -vr ${APPLY_TEMP_DIR}/ /
 }
