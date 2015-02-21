@@ -1,1 +1,5 @@
 APPLY_VERSION='0.0.1'
+
+function version() {
+  echo $APPLY_APPLICATION_NAME $APPLY_VERSION
+}
