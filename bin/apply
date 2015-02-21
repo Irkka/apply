@@ -1,32 +1,39 @@
 #!/bin/bash
-DEFAULT_CONFIG_DIR="${XDG_CONFIG_HOME}/apply"
 BASHLIB_PATH="${HOME}/.local/lib:$(readlink -m ${BASH_SOURCE}/../../lib)"
 
-echo $BASHLIB_PATH
-source "${HOME}/.local/lib/squire.sh"
+LOADED_BY_SQUIRE=()
+function load() {
+  library="${1}.sh"
+
+  if [[ -f $library ]]; then
+    source $library
+    echo "${library} loaded"
+    return 0
+  fi
+
+  echo "Library $library doesn't exist"
+  return 1
+}
+
+# Squire functionality integrated
+function require() {
+  library_directories=$(echo $BASHLIB_PATH|tr ':', ' ')
+  for library_directory in $library_directories ; do
+    library=$(readlink -f "${library_directory%%\/}/${1%%\.*}")
+    if load $library ; then
+      break
+    fi
+  done
+}
+
+function require_relative() {
+  relative_root_directory="${1%/*}"
+  library_relative_path="${2}"
+  library=$(readlink -f "${relative_root_directory}/${library_relative_path}")
+  load "${library}"
+}
+
 require 'apply'
 
-case $1 in
-  -v|--version )
-    echo "$APPLY_APPLICATION_NAME $APPLY_VERSION"
-    ;;
-  all )
-    config_directory="$(readlink -m ${BASH_SOURCE}/../../examples)"
-    packages_directory="${config_directory}/packages"
-    files_directory="${config_directory}/files"
-    repos_directory="${config_directory}/repos"
-
-    echo "$BASH_SOURCE"
-    echo "$DEFAULT_CONFIG_DIR"
-    echo "$config_directory"
-    echo "$packages_directory"
-    echo "$files_directory"
-    echo "$repos_directory"
-
-    echo 'Applying everything!'
-
-    echo 'Setting up Git repositories'
-    apply_repos $repos_directory
-    ;;
-esac
-
+apply_dispatch "$@"
+dispatcher_dump

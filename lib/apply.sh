@@ -1,5 +1,5 @@
 APPLY_APPLICATION_NAME=apply
-require 'apply/version'
 
-require 'apply/installer'
-require 'apply/repo_git'
+require_relative $BASH_SOURCE 'apply/version'
+require_relative $BASH_SOURCE 'apply/usage'
+require_relative $BASH_SOURCE 'apply/dispatcher'
