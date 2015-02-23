@@ -30,6 +30,12 @@ function build_file() {
   erubis ${source_file} > "${temp_file}"
 }
 
-function sync_target_system() {
-  rsync -vr ${APPLY_TEMP_DIR}/ /
+function process_packages() {
+  packages="$@"
+
+  echo 'Installing packages'
+  sudo pacman -Sy
+  sudo pacman -S $packages
 }
+
+export -f process_file build_file process_packages
