@@ -6,10 +6,10 @@ function process_file() {
   file_extension="${file##*.}"
   file_dir=$(dirname $1)
 
-  file_target_directory="${file_dir##${APPLY_SKELETON_DIR}/${APPLY_SKELETON}}"
+  file_target_directory="${file_dir##${APPLY_SKELETON_DIR}/${skeleton}}"
   file_target="${file_target_directory}/${file_name}"
 
-  temp_target_directory="${APPLY_TEMP_DIR}/${APPLY_SKELETON}/${file_target_directory#/}"
+  temp_target_directory="${APPLY_TEMP_DIR}/${skeleton}/${file_target_directory#/}"
   temp_file="${temp_target_directory}/${file_name}"
 
   mkdir -p $temp_target_directory

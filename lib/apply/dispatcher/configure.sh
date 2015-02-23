@@ -5,18 +5,20 @@ function dispatcher_configure() {
   parse_cli_options "$@"
   APPLY_RESOURCE_DIR="${APPLY_RESOURCE_DIR:-${DEFAULT_CONFIG_DIR}/resources}"
   APPLY_SKELETON_DIR="${APPLY_RESOURCE_DIR}/skeletons"
-  APPLY_PACKAGES_DIR="${APPLY_RESOURCE_DIR}/packages"
-  APPLY_FILES_DIR="${APPLY_RESOURCE_DIR}/files"
-  APPLY_REPOS_DIR="${APPLY_RESOURCE_DIR}/repos"
+  APPLY_CONTEXT_DIR="${APPLY_RESOURCE_DIR}/contexts"
 
-  APPLY_SKELETON="${APPLY_SKELETON:-desktop}"
+  APPLY_SKELETONS="${APPLY_SKELETONS:-desktop}"
   APPLY_PACKAGE_MANAGER="${APPLY_PACKAGE_MANAGER:-pacman}"
   APPLY_CONVEYOR="${APPLY_CONVEYOR:-local}"
-  APPLY_VCS="$APPLY_VCS:-git"
+  APPLY_VCS="${APPLY_VCS:-git}"
+
+  FILES_ENABLED="${FILES_ENABLED:-true}"
+  PACKAGES_ENABLED="${PACKAGES_ENABLED:-true}"
+  REPOS_ENABLED="${REPOS_ENABLED:-true}"
 }
 
 function parse_cli_options() {
-  options=$(getopt -qu -o 'h?vD:C:P:V:S:' -l 'help,version,resource-dir:,skeleton:,conveyor:,package-manager:,vcs:' -- "$@")
+  options=$(getopt -qu -o 'h?vD:C:P:V:S:n:' -l 'help,version,resource-dir:,skeletons:,conveyor:,package-manager:,vcs:,no-packages,no-files,no-repos' -- "$@")
   set -- $options
   if [[ "$#" -eq 1 ]]; then
     usage
@@ -36,8 +38,8 @@ function parse_cli_options() {
         APPLY_RESOURCE_DIR=$(realpath "$2")
         shift 2
         ;;
-      -S|--skeleton )
-        APPLY_SKELETON="$2"
+      -S|--skeletons )
+        APPLY_SKELETONS="$(echo $2|tr ',' ' ')"
         shift 2
         ;;
       -C|--conveyor )
@@ -52,6 +54,23 @@ function parse_cli_options() {
         APPLY_VCS="$2"
         shift 2
         ;;
+      -n )
+        DISABLED_RESOURCES="$(echo $2|tr ',' ' ')"
+        toggle_disabled_resources $DISABLED_RESOURCES
+        shift 2
+        ;;
+      --no-packages )
+        PACKAGES_ENABLED=false
+        shift
+        ;;
+      --no-repos )
+        REPOS_ENABLED=false
+        shift
+        ;;
+      --no-files )
+        FILES_ENABLED=false
+        shift
+        ;;
       -- )
         shift
         break
@@ -60,6 +79,28 @@ function parse_cli_options() {
         echo 'Internal error.'
         exit 1
         ;;
+    esac
+  done
+}
+
+function toggle_disabled_resources() {
+  while [[ -n $1 ]]; do
+    case $1 in
+      packages )
+        PACKAGES_ENABLED=false
+        shift
+        ;;
+      files )
+        FILES_ENABLED=false
+        shift
+        ;;
+      repos )
+        REPOS_ENABLED=false
+        shift
+        ;;
+      * )
+        echo 'Invalid resource type.'
+        shift
     esac
   done
 }
