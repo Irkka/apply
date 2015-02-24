@@ -3,6 +3,7 @@ function dispatcher_configure() {
   APPLY_TEMP_DIR_BASE="/tmp/apply"
 
   parse_cli_options "$@"
+
   APPLY_RESOURCE_DIR="${APPLY_RESOURCE_DIR:-${DEFAULT_CONFIG_DIR}/resources}"
   APPLY_SKELETON_DIR="${APPLY_RESOURCE_DIR}/skeletons"
   APPLY_CONTEXT_DIR="${APPLY_RESOURCE_DIR}/contexts"
@@ -15,10 +16,12 @@ function dispatcher_configure() {
   FILES_ENABLED="${FILES_ENABLED:-true}"
   PACKAGES_ENABLED="${PACKAGES_ENABLED:-true}"
   REPOS_ENABLED="${REPOS_ENABLED:-true}"
+
+  TARGET_HOSTS="${TARGET_HOSTS:-}"
 }
 
 function parse_cli_options() {
-  options=$(getopt -qu -o 'h?vD:C:P:V:S:n:' -l 'help,version,resource-dir:,skeletons:,conveyor:,package-manager:,vcs:,no-packages,no-files,no-repos' -- "$@")
+  options=$(getopt -qu -o 'h?vn:D:C:P:V:S:H:' -l 'help,version,no-packages,no-files,no-repos,resource-dir:,skeletons:,conveyor:,package-manager:,vcs:,target-hosts:' -- "$@")
   set -- $options
   if [[ "$#" -eq 1 ]]; then
     usage
@@ -52,6 +55,10 @@ function parse_cli_options() {
         ;;
       -V|--vcs )
         APPLY_VCS="$2"
+        shift 2
+        ;;
+      -H|--target-hosts )
+        TARGET_HOSTS="$(echo $2|tr ',' ' ')"
         shift 2
         ;;
       -n )
