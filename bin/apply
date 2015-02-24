@@ -19,9 +19,12 @@ function require() {
   for library_directory in $library_directories ; do
     library=$(readlink -f "${library_directory%%\/}/${1%%\.*}")
     if load $library ; then
-      break
+      return 0
     fi
   done
+
+  echo "Library $library could not be found"
+  exit 1
 }
 
 # At the moment $BASH_SOURCE needs to be passed to require_relative
@@ -31,7 +34,12 @@ function require_relative() {
   relative_root_directory="${1%/*}"
   library_relative_path="${2}"
   library=$(readlink -f "${relative_root_directory}/${library_relative_path}")
-  load "${library}"
+  if load "${library}"; then
+    return 0
+  fi
+
+  echo "Library $library could not be found"
+  exit 1
 }
 
 require 'apply'
