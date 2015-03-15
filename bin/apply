@@ -1,7 +1,8 @@
 #!/bin/bash
-BASHLIB_PATH="${HOME}/.local/lib:$(readlink -m ${BASH_SOURCE}/../../lib)"
 
 # Squire functionality integrated for now
+BASHLIB_PATH="${HOME}/.local/lib:$(readlink -m ${BASH_SOURCE}/../../lib)"
+
 LOADED_BY_SQUIRE=()
 function load() {
   library="${1}.sh"

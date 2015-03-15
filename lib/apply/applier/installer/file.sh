@@ -27,7 +27,17 @@ function build_file() {
   source_file="$1"
   temp_file="$2"
 
-  erubis ${source_file} > "${temp_file}"
+  hostname=hayley
+  context_file="${APPLY_CONTEXT_DIR}/${hostname}.yml" 
+  echo $context_file
+
+  if [[ -f $context_file ]]; then
+    erubis -f "$context_file" ${source_file} > "${temp_file}"
+    echo 'hello'
+  else
+    erubis "${source_file}" > "${temp_file}"
+    echo 'hello'
+  fi
 }
 
 export -f process_file build_file
