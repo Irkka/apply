@@ -1,1 +1,1 @@
-require_relative $BASH_SOURCE 'conveyor/local'
+require_relative 'conveyor/local'

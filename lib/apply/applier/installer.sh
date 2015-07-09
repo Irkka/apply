@@ -1,3 +1,3 @@
-require_relative $BASH_SOURCE 'installer/package'
-require_relative $BASH_SOURCE 'installer/file'
-require_relative $BASH_SOURCE 'installer/repo'
+require_relative 'installer/package'
+require_relative 'installer/file'
+require_relative 'installer/repo'

@@ -1,5 +1,5 @@
-require_relative $BASH_SOURCE 'applier/conveyor'
-require_relative $BASH_SOURCE 'applier/installer'
+require_relative 'applier/conveyor'
+require_relative 'applier/installer'
 
 function sync_target_system() {
   skeleton=$1

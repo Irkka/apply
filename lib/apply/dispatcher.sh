@@ -1,4 +1,4 @@
-require_relative $BASH_SOURCE 'dispatcher/configure'
+require_relative 'dispatcher/configure'
 
 function apply_dispatch() {
   dispatcher_configure "$@"
